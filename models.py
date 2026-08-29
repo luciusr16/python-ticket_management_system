@@ -1,3 +1,4 @@
+
 class User:
   def __init__(self, name, email):
     self.name = name
@@ -8,18 +9,18 @@ class Engineer(User):
   def __init__(self, name, email):
     super().__init__(name, email)
     self.team = None
-    self.assinged_tickets = []
+    self.assigned_tickets = []
 
 
 class Team:
     def __init__(self, name, category):
       self.name = name
-      self. category = category
+      self.category = category
       self.engineers = []
       self.tickets = []
     def add_engineer(self, engineer):
        self.engineers.append(engineer)
-       engineer.team = self.name
+       engineer.team = self
 
 
 class Ticket:
@@ -39,5 +40,5 @@ class Ticket:
         self.priority = priority
         self.status = "Open"
         self.submitted_by = submitted_by
-        self.assinged_team = None
-        self.assinged_engineer = None
+        self.assigned_team = None
+        self.assigned_engineer = None
