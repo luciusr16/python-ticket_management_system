@@ -97,15 +97,7 @@ ticket5 = system.submit_ticket(
   "Medium"
 )
 
-
-
 system.route_ticket(ticket1)
-system.route_ticket(ticket2)
-system.route_ticket(ticket3)
-system.route_ticket(ticket4)
-system.route_ticket(ticket5)
-
-
 
 
 

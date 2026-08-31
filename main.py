@@ -2,21 +2,13 @@
 
 from data import system
 
-while True:
-  print(" \nWelcome to the ticket management system")
-  print("\nUSER PANEL:")
-  print("1. SUBMIT TICKET")
-  print("2. VIEW MY TICKETS")
-  print("3. GET TICKET UPDATE")
 
-  print("5. ENGINEER DASHBOARD")
-  print("6. TEAM DASHBOARD")
-  print("7. EXIT")
-  choice = input("\nPick an option above: ")
-  if choice == "1":
-    email = input("Please enter your email")
-    user = system.find_user(email)
-    if user is not None:
+def submit_a_ticket():
+      email = input("Please enter your email")
+      user = system.find_user(email)
+      if user is None:
+        print("User not found")
+        return
       title = input("Enter ticket title: ")
       description = input ("Enter description: ")
       print("1. Networking")
@@ -32,9 +24,6 @@ while True:
         category_choice = "Software"
       elif category_choice == "4":
         category_choice = "Cloud"
-      else:
-        print("Please select a number from list above: ")
-        continue
       priority = input("Enter priority (High, Medium, Low ?):  ")
       ticket = system.submit_ticket(user, title, description, category_choice, priority)
       team = system.route_ticket(ticket)
@@ -49,9 +38,9 @@ while True:
         print(f"Assigned team: {team.name}")
       else:
         print("No matching team was found")
-    else:
-        print("User not found")
-  elif choice == "2":
+
+
+def view_my_tickets():
       email = input("Please enter your email: ")
       user = system.find_user(email)
       if user is None:
@@ -59,17 +48,18 @@ while True:
       elif not user.submitted_tickets:
         print("No submitted tickets")
       else:
-        user_tickets = user.submitted_tickets
         print(f"\n All tickets for {user.name}")
+        user_tickets = user.submitted_tickets
         for ticket in user_tickets:
-           print(f" \nStatus: {ticket.status}")
-           print(f" Ticket ID: {ticket.ticket_id}")
-           print(f" Title: {ticket.title}")
-           print(f" Description: {ticket.description}")
-           print(f" Category: {ticket.category}")
-           print(f" Priority: {ticket.priority}")
+            print(f" \nStatus: {ticket.status}")
+            print(f" Ticket ID: {ticket.ticket_id}")
+            print(f" Title: {ticket.title}")
+            print(f" Description: {ticket.description}")
+            print(f" Category: {ticket.category}")
+            print(f" Priority: {ticket.priority}")
 
-  elif choice == "3":
+
+def check_ticket():
     email = input("Please enter your email: ")
     user = system.find_user(email)
     if user is None:
@@ -91,13 +81,89 @@ while True:
 
 
 
+def view_team_queue():
+   team_name = input("Enter team name: ").lower().strip()
+   team = system.teams.get(team_name)
+   if team is None:
+      print("No team matches our system records ")
+      return
+   if not team.tickets:
+      print(f"{team.name} has no open tickets ")
+      return
+   print(F"All tickets for the: {team.name}")
+   for ticket in team.tickets:
+      print(f"\nTicket ID: {ticket.ticket_id}")
+      print(f"Title: {ticket.title}")
+      print(f"Description: {ticket.description}")
+      print(f"Priority: {ticket.priority}")
+      print(f"Status: {ticket.status}")
 
 
 
 
 
 
+def user_panel():
+   while True:
+        print("\n--- USER PANEL ---")
+        print("1. Submit Ticket")
+        print("2. View My Tickets")
+        print("3. Check Ticket")
+        print("4. Back")
 
+        choice = input("\nPick an option: ")
+
+        if choice == "1":
+            submit_a_ticket()
+
+        elif choice == "2":
+            view_my_tickets()
+
+        elif choice == "3":
+            check_ticket()
+
+        elif choice == "4":
+            break
+
+        else:
+            print("Invalid option.")
+
+
+def engineer_panel():
+   while True:
+        print("\n--- ENGINEER PANEL ---")
+        print("1. View Assigned Tickets")
+        print("2. Back")
+
+        choice = input("\nPick an option: ")
+
+        if choice == "1":
+           view_team_queue()
+
+
+while True:
+    print("\n================================")
+    print("   TICKET MANAGEMENT SYSTEM")
+    print("================================")
+
+    print("\n1. User Panel")
+    print("2. Engineer Panel")
+    print("3. Exit")
+
+    choice = input("\nPick an option: ")
+
+    if choice == "1":
+        user_panel()
+
+    elif choice == "2":
+        engineer_panel()
+
+    elif choice == "3":
+        print("Goodbye.")
+        break
+
+    else:
+        print("Invalid option.")
 
 
 
