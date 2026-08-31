@@ -88,6 +88,7 @@ ticket4 = system.submit_ticket(
   "Cyber",
   "High"
 )
+
 ticket5 = system.submit_ticket(
   susan,
   "Forgot password",
@@ -95,11 +96,20 @@ ticket5 = system.submit_ticket(
   "Software",
   "Medium"
 )
+
+
+
 system.route_ticket(ticket1)
 system.route_ticket(ticket2)
 system.route_ticket(ticket3)
 system.route_ticket(ticket4)
 system.route_ticket(ticket5)
 
-user = system.find_user("johnt@user.com")
+
+
+
+
+
+
+
 

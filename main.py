@@ -3,17 +3,16 @@
 from data import system
 
 while True:
-  print("Welcome to the ticket management system")
-  print("\n1. SUBMIT TICKET")
-  print("2. FIND TICKETS")
-  print("3. VIEW ALL TICKETS")
-  print("4. VIEW MY TICKETS")
+  print(" \nWelcome to the ticket management system")
+  print("\nUSER PANEL:")
+  print("1. SUBMIT TICKET")
+  print("2. VIEW MY TICKETS")
+  print("3. GET TICKET UPDATE")
 
   print("5. ENGINEER DASHBOARD")
   print("6. TEAM DASHBOARD")
   print("7. EXIT")
   choice = input("\nPick an option above: ")
-
   if choice == "1":
     email = input("Please enter your email")
     user = system.find_user(email)
@@ -36,11 +35,11 @@ while True:
       else:
         print("Please select a number from list above: ")
         continue
-
       priority = input("Enter priority (High, Medium, Low ?):  ")
       ticket = system.submit_ticket(user, title, description, category_choice, priority)
       team = system.route_ticket(ticket)
       print("Successfully submitted your ticket")
+      print(f"Please take note of your ticket ID: {ticket.ticket_id}")
       print(f"  \n Submitted by: {ticket.submitted_by.name}")
       print(f" Title: {ticket.title}")
       print(f" Description: {ticket.description}")
@@ -52,6 +51,50 @@ while True:
         print("No matching team was found")
     else:
         print("User not found")
+  elif choice == "2":
+      email = input("Please enter your email: ")
+      user = system.find_user(email)
+      if user is None:
+        print("Please enter a valid email")
+      elif not user.submitted_tickets:
+        print("No submitted tickets")
+      else:
+        user_tickets = user.submitted_tickets
+        print(f"\n All tickets for {user.name}")
+        for ticket in user_tickets:
+           print(f" \nStatus: {ticket.status}")
+           print(f" Ticket ID: {ticket.ticket_id}")
+           print(f" Title: {ticket.title}")
+           print(f" Description: {ticket.description}")
+           print(f" Category: {ticket.category}")
+           print(f" Priority: {ticket.priority}")
+
+  elif choice == "3":
+    email = input("Please enter your email: ")
+    user = system.find_user(email)
+    if user is None:
+      print("Please enter a valid email ")
+    else:
+      ticket_id = int(input("Please enter your ticket ID: "))
+      ticket = system.find_ticket(ticket_id)
+      if ticket is None:
+        print("\nTicket ID is not found")
+      elif ticket.submitted_by != user:
+        print("\nThis ticket does not belong to you ")
+      else:
+        print(f"\nYour ticket is currently being handled by the {ticket.assigned_team.name}")
+        print(f" Status: {ticket.status}")
+        print(f" Title: {ticket.title}")
+        print(f" Description: {ticket.description}")
+        print(f" Category: {ticket.category}")
+        print(f" Priority: {ticket.priority}")
+
+
+
+
+
+
+
 
 
 
