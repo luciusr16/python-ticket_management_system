@@ -1,5 +1,5 @@
 # this will be the interaactive menu for the user
-
+import sys
 from data import system
 
 
@@ -80,6 +80,12 @@ def check_ticket():
       print(f" Description: {ticket.description}")
       print(f" Category: {ticket.category}")
       print(f" Priority: {ticket.priority}")
+      if ticket.updated_status is None:
+            print("Updated status: Pending ")
+      else:
+           print(f"Updated status: {ticket.updated_status}")
+      for comment in ticket.comments:
+          print(f"{ticket.assigned_engineer} left a comment: {comment}")
 
 
 def view_team_queue():
@@ -162,6 +168,82 @@ def take_ticket():
 
 
 
+def view_assigned_tickets():
+   email = input("Enter engineer email: ")
+   engineer = system.find_engineer(email)
+   if engineer is None:
+      print("No engineer found")
+      return
+   assigned_tickets = engineer.assigned_tickets
+   if not assigned_tickets:
+         print(f"\n No assigned tickets for: {engineer.name}")
+         return
+   for ticket in assigned_tickets:
+         if ticket.status != "Assigned":
+            print(f"\nNo assigned tickets for: {engineer.name}")
+            return
+         print(f"\nHere are the assigned tickets for: {engineer.name}")
+         print(f"\nTicket ID: {ticket.ticket_id}")
+         print(f"Title: {ticket.title}")
+         print(f"Description: {ticket.description}")
+         print(f"Priority: {ticket.priority}")
+         print(f"Status: {ticket.status}")
+         print(f"Submitted by: {ticket.submitted_by.email}")
+         if ticket.updated_status is None:
+            print("Updated status: Pending ")
+         else:
+          print(f"Updated status: {ticket.updated_status}")
+         for comment in ticket.comments:
+            print(f"{engineer.name} left a comment: {comment}")
+         return engineer
+
+
+def update_ticket_status():
+      engineer = view_assigned_tickets()
+      ticket_id = int(input("\nEnter ticket ID of ticket you would like to update: "))
+      ticket_success = system.find_ticket(ticket_id)
+
+      if ticket_success:
+         print("\n1. In progress")
+         print("2. Resolved")
+         print("3. Send back to team queue")
+         choice = input("\nChoose status option from above: ")
+
+         for ticket in engineer.assigned_tickets:
+
+            if choice == "1":
+               ticket.updated_status = "In Progress"
+               comment = input("Any comments? : ")
+               ticket.comments.append(comment)
+               print(f"\nThank you: {engineer.name}, your ticket has been updated.")
+               break
+
+            elif choice == "2":
+               ticket.updated_status = "Resolved"
+               comment = input("Any comments? : ")
+               ticket.comments.append(comment)
+               print(f"\nThank you: {engineer.name}, your ticket has been updated.")
+               break
+
+            elif choice == "3":
+               comment = input("Any comments? : ")
+               ticket.comments.append(comment)
+               print(f"\nThank you: {engineer.name}, this ticket has been sent back to your team")
+               break
+
+      elif ticket_id != view_assigned_tickets.assigned_tickets.ticket_id:
+            print(f"Ticket ID: {ticket_id} does not belong to you")
+      else:
+         print(f"Ticket ID: {ticket_id} does not exist")
+
+
+
+
+
+
+
+
+
 
 
 def engineer_panel():
@@ -169,7 +251,9 @@ def engineer_panel():
         print("\n--- ENGINEER PANEL ---")
         print("1. View all open team tickets ")
         print("2. Assign yourself a ticket  ")
-        print("3. Back")
+        print("3. View all your assigned tickets ")
+        print("4. Update status of an assigned ticket")
+        print("5. Back")
 
         choice = input("\nPick an option: ")
         if choice == "1":
@@ -177,6 +261,10 @@ def engineer_panel():
         elif choice == "2":
            take_ticket()
         elif choice == "3":
+           view_assigned_tickets()
+        elif choice == "4":
+           update_ticket_status()
+        elif choice == "5":
            break
 
 def user_panel():

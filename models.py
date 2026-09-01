@@ -41,3 +41,6 @@ class Ticket:
         self.submitted_by = submitted_by
         self.assigned_team = None
         self.assigned_engineer = None
+        self.updated_status = None
+        self.comments = []
+        
