@@ -15,12 +15,18 @@ class TicketSystem:
     self.teams[team.name.lower()] = team
 
   def add_engineer(self, engineer):
-    self.engineers[engineer.name.lower()] = engineer
+    self.engineers[engineer.email.lower()] = engineer
 
   def find_user(self, user_email):
     user = self.users.get(user_email.lower().strip())
     if user:
       return user
+    return None
+
+  def find_engineer(self, engineer_email):
+    engineer = self.engineers.get(engineer_email.lower().strip())
+    if engineer:
+      return engineer
     return None
 
   def submit_ticket(self, user, title, description, category, priority):
@@ -55,7 +61,7 @@ class TicketSystem:
       return False
     if engineer_team != ticket_team:
       return False
-    ticket.assigned_engineer = engineer
+    ticket.assigned_engineer = engineer.name
     engineer.assigned_tickets.append(ticket)
     ticket.status = "Assigned"
     return True

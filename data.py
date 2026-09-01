@@ -101,7 +101,3 @@ system.route_ticket(ticket1)
 
 
 
-
-
-
-

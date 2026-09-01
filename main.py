@@ -71,44 +71,120 @@ def check_ticket():
         print("\nTicket ID is not found")
       elif ticket.submitted_by != user:
         print("\nThis ticket does not belong to you ")
-      else:
-        print(f"\nYour ticket is currently being handled by the {ticket.assigned_team.name}")
-        print(f" Status: {ticket.status}")
-        print(f" Title: {ticket.title}")
-        print(f" Description: {ticket.description}")
-        print(f" Category: {ticket.category}")
-        print(f" Priority: {ticket.priority}")
-
+      elif ticket.assigned_engineer is None:
+         print("No assigned engineer yet ")
+      print(f"\nYour ticket is currently being handled by the {ticket.assigned_team.name}")
+      print(f" Assigned engineer: {ticket.assigned_engineer}")
+      print(f" Status: {ticket.status}")
+      print(f" Title: {ticket.title}")
+      print(f" Description: {ticket.description}")
+      print(f" Category: {ticket.category}")
+      print(f" Priority: {ticket.priority}")
 
 
 def view_team_queue():
-   team_name = input("Enter team name: ").lower().strip()
+   email = input("Enter email: ")
+   engineer = system.find_engineer(email)
+   if engineer is None:
+      print("No engineer found with a matching email")
+      return
+   team_name = input("Enter the team name: ").lower().strip()
    team = system.teams.get(team_name)
    if team is None:
-      print("No team matches our system records ")
+      print("Team name not found in our system")
       return
-   if not team.tickets:
-      print(f"{team.name} has no open tickets ")
+   if engineer.team != team:
+      print("You cannot view tickets for another team")
       return
-   print(F"All tickets for the: {team.name}")
+
+   open_tickets = []
    for ticket in team.tickets:
-      print(f"\nTicket ID: {ticket.ticket_id}")
-      print(f"Title: {ticket.title}")
-      print(f"Description: {ticket.description}")
-      print(f"Priority: {ticket.priority}")
-      print(f"Status: {ticket.status}")
+      if ticket.assigned_engineer is None:
+         open_tickets.append(ticket)
+
+   if not open_tickets:
+      print("No open tickets for your team ")
+      return
+
+   print(f"All open tickets for: {team.name}")
+   for ticket in team.tickets:
+        print(f"\nTicket ID: {ticket.ticket_id}")
+        print(f"Title: {ticket.title}")
+        print(f"Description: {ticket.description}")
+        print(f"Priority: {ticket.priority}")
+        print(f"Status: {ticket.status}")
+        print(f"Submitted by: {ticket.submitted_by.email}")
+
+
+def take_ticket():
+   email = input("Please enter your email: ")
+   engineer = system.find_engineer(email)
+   if engineer is None:
+      print("No engineer was found")
+      return
+   team_tickets = engineer.team.tickets
+   print(f"Open tickets for: {engineer.team.name}")
+   available_tickets = []
+
+   for ticket in team_tickets:
+      if ticket.assigned_engineer is None:
+        available_tickets.append(ticket)
+        print(f"\nTicket ID: {ticket.ticket_id}")
+        print(f"Title: {ticket.title}")
+        print(f"Description: {ticket.description}")
+        print(f"Priority: {ticket.priority}")
+        print(f"Status: {ticket.status}")
+        print(f"Submitted by: {ticket.submitted_by.email}")
+   if not available_tickets:
+      print("There are no available tickets")
+      return
+   ticket_id = int(input("Enter ticket ID you would like to take: "))
+   ticket_found = system.find_ticket(ticket_id)
+
+   if ticket_found is None:
+        print("No ticket ID found")
+        return
+
+   if ticket_found.assigned_team != engineer.team:
+        print("Ticket is not from the same team ")
+        return
+   if ticket_found.assigned_engineer is not None:
+      print("This ticket has already been taken")
+      return
+
+   assigned = system.assign_ticket(ticket, engineer)
+   if assigned:
+    print("\nSuccessfully assigned ticket ")
+    print(f"\nTicket: {ticket.ticket_id}")
+    print(f"Assigned to: {engineer.name}")
+   else:
+      print("Ticket failed to be assigned")
 
 
 
 
 
+def engineer_panel():
+   while True:
+        print("\n--- ENGINEER PANEL ---")
+        print("1. View all open team tickets ")
+        print("2. Assign yourself a ticket  ")
+        print("3. Back")
+
+        choice = input("\nPick an option: ")
+        if choice == "1":
+           view_team_queue()
+        elif choice == "2":
+           take_ticket()
+        elif choice == "3":
+           break
 
 def user_panel():
    while True:
         print("\n--- USER PANEL ---")
-        print("1. Submit Ticket")
-        print("2. View My Tickets")
-        print("3. Check Ticket")
+        print("1. Submit a Ticket")
+        print("2. View all my submitted tickets")
+        print("3. Check progress on a submitted ticket")
         print("4. Back")
 
         choice = input("\nPick an option: ")
@@ -127,19 +203,6 @@ def user_panel():
 
         else:
             print("Invalid option.")
-
-
-def engineer_panel():
-   while True:
-        print("\n--- ENGINEER PANEL ---")
-        print("1. View Assigned Tickets")
-        print("2. Back")
-
-        choice = input("\nPick an option: ")
-
-        if choice == "1":
-           view_team_queue()
-
 
 while True:
     print("\n================================")
