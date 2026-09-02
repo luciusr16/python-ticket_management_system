@@ -4,7 +4,7 @@ from data import system
 
 
 def submit_a_ticket():
-      email = input("Please enter your email")
+      email = input("Please enter your email: ")
       user = system.find_user(email)
       if user is None:
         print("User not found")
@@ -62,31 +62,48 @@ def view_my_tickets():
 def check_ticket():
     email = input("Please enter your email: ")
     user = system.find_user(email)
-    if user is None:
-      print("Please enter a valid email ")
-    else:
-      ticket_id = int(input("Please enter your ticket ID: "))
-      ticket = system.find_ticket(ticket_id)
-      if ticket is None:
-        print("\nTicket ID is not found")
-      elif ticket.submitted_by != user:
-        print("\nThis ticket does not belong to you ")
-      elif ticket.assigned_engineer is None:
-         print("No assigned engineer yet ")
-      print(f"\nYour ticket is currently being handled by the {ticket.assigned_team.name}")
-      print(f" Assigned engineer: {ticket.assigned_engineer}")
-      print(f" Status: {ticket.status}")
-      print(f" Title: {ticket.title}")
-      print(f" Description: {ticket.description}")
-      print(f" Category: {ticket.category}")
-      print(f" Priority: {ticket.priority}")
-      if ticket.updated_status is None:
-            print("Updated status: Pending ")
-      else:
-           print(f"Updated status: {ticket.updated_status}")
-      for comment in ticket.comments:
-          print(f"{ticket.assigned_engineer} left a comment: {comment}")
 
+    if user is None:
+      print("Please enter a valid email")
+      return
+
+    ticket_id = int(input("Please enter the ticket ID: "))
+    ticket = system.find_ticket(ticket_id)
+
+    if ticket is None:
+      print("Ticket ID is not found")
+      return
+
+    if ticket.submitted_by != user:
+      print("This ticket does not belong to you")
+      return
+
+    if ticket.updated_status == "Resolved":
+      print("Your ticket has been resolved, please check details below")
+
+    elif ticket.updated_status == "In Progress":
+      print(f"Your ticket is in progress with: {ticket.assigned_engineer}")
+
+    else:
+      print(f"\nYour ticket is being handled by the: {ticket.assigned_team.name }")
+
+    if ticket.assigned_engineer is None:
+      print("Assigned engineer: None")
+    else:
+      print(f"Assigned engineer: {ticket.assigned_engineer}")
+
+    print(f"\nTicket ID: {ticket.ticket_id}")
+    print(f"Status: {ticket.status}")
+    print(f"Title: {ticket.title}")
+    print(f"Description: {ticket.description}")
+    print(f"Category: {ticket.category}")
+    print(f"Priority: {ticket.priority}")
+    if ticket.updated_status is None:
+         print("\nUpdated status: Pending ")
+    else:
+      print(f"\nUpdated status: {ticket.updated_status}")
+    for comment in ticket.comments:
+       print(comment)
 
 def view_team_queue():
    email = input("Enter email: ")
@@ -120,6 +137,9 @@ def view_team_queue():
         print(f"Priority: {ticket.priority}")
         print(f"Status: {ticket.status}")
         print(f"Submitted by: {ticket.submitted_by.email}")
+        for comment in ticket.comments:
+           print(comment)
+
 
 
 def take_ticket():
@@ -194,7 +214,7 @@ def view_assigned_tickets():
          else:
           print(f"Updated status: {ticket.updated_status}")
          for comment in ticket.comments:
-            print(f"{engineer.name} left a comment: {comment}")
+            print(f"{engineer.name}: {comment}")
          return engineer
 
 
@@ -214,35 +234,32 @@ def update_ticket_status():
             if choice == "1":
                ticket.updated_status = "In Progress"
                comment = input("Any comments? : ")
-               ticket.comments.append(comment)
+               ticket.comments.append(f"{engineer.name}: {comment}")
                print(f"\nThank you: {engineer.name}, your ticket has been updated.")
                break
 
             elif choice == "2":
                ticket.updated_status = "Resolved"
                comment = input("Any comments? : ")
-               ticket.comments.append(comment)
+               ticket.comments.append(f"{engineer.name}: {comment}")
                print(f"\nThank you: {engineer.name}, your ticket has been updated.")
                break
 
             elif choice == "3":
-               comment = input("Any comments? : ")
-               ticket.comments.append(comment)
-               print(f"\nThank you: {engineer.name}, this ticket has been sent back to your team")
+               engineer.assigned_tickets.remove(ticket)
+               ticket.assigned_engineer = None
+               ticket.updated_status = "Pending"
+               ticket.status = "Open"
+               comment = input("Any comments: ")
+               ticket.comments.append(f"{engineer.name}: {comment}")
+
+               print(f"\nThank you: {engineer.name}, this ticket has been sent back to your team and is open")
                break
 
       elif ticket_id != view_assigned_tickets.assigned_tickets.ticket_id:
             print(f"Ticket ID: {ticket_id} does not belong to you")
       else:
          print(f"Ticket ID: {ticket_id} does not exist")
-
-
-
-
-
-
-
-
 
 
 
